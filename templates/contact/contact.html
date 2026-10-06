@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact — AMTECH KSA{% endblock %}
+
+{% block content %}
+<!-- تنسيق خاص بصفحة التواصل -->
+<style>
+  .contact-forms-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+  }
+
+  .contact-forms-layout > .contact-card {
+    min-width: 0;
+  }
+
+  .contact-forms-layout .form-grid {
+    margin-top: 24px;
+  }
+
+  .contact-forms-layout .form-group {
+    min-width: 0;
+  }
+
+  .contact-forms-layout .form-control {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .contact-field-errors {
+    margin: 6px 0 0;
+    padding: 0;
+    list-style: none;
+    color: #ffb4ab;
+    font-size: 0.875rem;
+  }
+
+  .contact-errors {
+    margin-bottom: 16px;
+  }
+
+  .contact-feedback {
+    margin-bottom: 24px;
+  }
+
+  .contact-branch {
+    margin-top: 24px;
+  }
+
+  @media (max-width: 900px) {
+    .contact-forms-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .contact-forms-layout .form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<section class="section">
+  <div class="container">
+
+    <!-- رسائل نجاح الإرسال أو الأخطاء العامة للفورمين -->
+    {% if messages %}
+      <div class="form-messages contact-feedback" role="status">
+        {% for message in messages %}
+          <p class="form-message form-message--{{ message.tags }}">
+            {{ message }}
+          </p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="contact-forms-layout">
+
+      <!-- فورم الأسئلة والاستفسارات العامة -->
+      <div class="contact-card reveal in-view">
+        <p class="signal">Contact AMTECH KSA</p>
+        <h1 class="section-title">General enquiries</h1>
+        <p>
+          Have a question? Send us a message and our team will contact you.
+        </p>
+
+        {% if enquiry_form.errors %}
+          <div class="contact-errors" role="alert">
+            <p>Please review the highlighted fields.</p>
+            {{ enquiry_form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <form
+          class="form-grid"
+          method="post"
+          action="{% url 'contact:contact' %}"
+        >
+          {% csrf_token %}
+
+          <!-- تحديد الفورم المرسل لدالة contact -->
+          <input type="hidden" name="form_type" value="enquiry">
+
+          {% for field in enquiry_form %}
+            <div class="form-group{% if field.name == 'message' %} form-group--wide{% endif %}">
+              <label for="{{ field.id_for_label }}">
+                {{ field.label }}
+              </label>
+
+              <!-- حقول Django تحتفظ بالقيم عند فشل التحقق -->
+              {{ field }}
+
+              {% if field.errors %}
+                <ul class="contact-field-errors">
+                  {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <div class="form-submit-row form-group--wide">
+            <button class="btn" type="submit">
+              Send enquiry
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- فورم طلب عينة للتجربة -->
+      <div class="contact-card reveal in-view">
+        <p class="signal">Try our products</p>
+        <h2 class="section-title">Request a trial</h2>
+        <p>
+          Choose a product you would like to try.
+          Our team will contact you to discuss availability and arrangements.
+        </p>
+
+        {% if sample_form.errors %}
+          <div class="contact-errors" role="alert">
+            <p>Please review the highlighted fields.</p>
+            {{ sample_form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <form
+          class="form-grid"
+          method="post"
+          action="{% url 'contact:contact' %}"
+        >
+          {% csrf_token %}
+
+          <!-- تحديد طلب التجربة بشكل مستقل عن الاستفسارات -->
+          <input type="hidden" name="form_type" value="sample">
+
+          {% for field in sample_form %}
+            <div class="form-group{% if field.name == 'notes' %} form-group--wide{% endif %}">
+              <label for="{{ field.id_for_label }}">
+                {{ field.label }}
+              </label>
+
+              {{ field }}
+
+              {% if field.errors %}
+                <ul class="contact-field-errors">
+                  {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <div class="form-submit-row form-group--wide">
+            <button class="btn" type="submit">
+              Request a trial
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- بيانات الفرع أسفل الفورمين -->
+    <aside class="contact-card contact-branch reveal in-view">
+      <h2>Saudi Branch</h2>
+
+      <div class="contact-list">
+        <span>
+          <b>Address:</b>
+          Al Akaria Plaza, Level 6, Gate D,
+          Olaya Street, Al Olaya, Riyadh
+        </span>
+        <span>
+          <b>Catalogue:</b>
+          available for direct download
+        </span>
+        <span>
+  <b>WhatsApp:</b>
+  <a
+    href="https://wa.me/966560080408"
+    target="_blank"
+    rel="noopener noreferrer"
+    dir="ltr"
+  >
+    +966 56 008 0408
+  </a>
+</span>
+      </div>
+
+      <!-- نضيف رابط واتساب عند اعتماد رقم التواصل الصحيح -->
+      <div class="download-row">
+        <a
+  class="btn btn-secondary"
+  href="https://wa.me/966560080408?text=Hello%20AMTECH%20KSA%2C%20I%20have%20an%20enquiry."
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  Contact us on WhatsApp
+</a>
+        <a
+          class="btn"
+          href="{% static 'pdfs/Amtech_KSA_catalog_2026.pdf' %}"
+          download
+        >
+          Download catalogue
+        </a>
+
+        <a
+          class="btn btn-secondary"
+          href="{% static 'pdfs/AMTECH_Contract_Terms_Conditions.pdf' %}"
+          download
+        >
+          Terms PDF
+        </a>
+      </div>
+    </aside>
+
+  </div>
+</section>
+{% endblock %}

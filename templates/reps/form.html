@@ -1,0 +1,508 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}New Contract — AMTECH KSA{% endblock %}
+
+{% block content %}
+<!-- تنسيق جداول القياسات مع السماح بالتمرير على الموبايل -->
+<style>
+  .measurement-table-wrap {
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+
+  .measurement-table {
+    width: 100%;
+    min-width: 360px;
+    border-collapse: collapse;
+  }
+
+  .measurement-table caption {
+    text-align: left;
+    font-weight: bold;
+    padding-bottom: 8px;
+  }
+
+  .measurement-table th,
+  .measurement-table td {
+    border: 1px solid currentColor;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .measurement-table .form-control {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* تسميات لقارئات الشاشة بدون التأثير على شكل الجدول */
+  .measurement-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<section class="rep-page">
+  <div class="container">
+    <div class="rep-header reveal in-view">
+      <div>
+        <p class="signal">New contract</p>
+        <h1>Sales order form</h1>
+
+        <!-- اسم المندوب من حساب Django الحالي -->
+        <p class="form-note">
+          Logged in as
+          <b>{{ request.user.get_full_name|default:request.user.username }}</b>.
+          Fill in the contract, save, then print.
+        </p>
+      </div>
+
+      <!-- فورم الخروج مستقل عن فورم العقد -->
+      <form method="post" action="{% url 'reps:logout' %}">
+        {% csrf_token %}
+        <button class="btn btn-secondary" type="submit">
+          Logout / switch rep
+        </button>
+      </form>
+    </div>
+
+    <!-- إرسال بيانات العقد إلى Django -->
+    <form
+      class="contract-form"
+      method="post"
+      action="{% url 'reps:form' %}"
+      id="contract-form"
+    >
+      {% csrf_token %}
+
+      <!-- عرض الأخطاء مع الاحتفاظ بالبيانات المدخلة -->
+      {% if form.errors %}
+        <section class="form-card" role="alert">
+          <h2>Please review the following fields</h2>
+          <ul>
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </section>
+      {% endif %}
+
+      <!-- البيانات الأساسية -->
+      <section class="form-card reveal in-view">
+        <h2>Basic Details</h2>
+        <div class="form-grid">
+          <label class="form-group">
+            Place
+            {{ form.place }}
+          </label>
+          <label class="form-group">
+            Date
+            {{ form.date }}
+          </label>
+          <label class="form-group">
+            Doctor Name
+            {{ form.name }}
+          </label>
+          <label class="form-group">
+            Speciality
+            {{ form.speciality }}
+          </label>
+          <label class="form-group">
+            Mobile
+            {{ form.mobile }}
+          </label>
+          <label class="form-group">
+            Email
+            {{ form.email }}
+          </label>
+          <label class="form-group">
+            City
+            {{ form.city }}
+          </label>
+          <label class="form-group">
+            Country
+            {{ form.country }}
+          </label>
+          <label class="form-group form-group--wide">
+            Address
+            {{ form.address }}
+          </label>
+        </div>
+      </section>
+
+      <!-- وصفة العين اليمنى واليسرى -->
+      <section class="form-card reveal in-view">
+        <h2>R/X</h2>
+        <div class="form-grid">
+          <label class="form-group">R SPH {{ form.r_sph }}</label>
+          <label class="form-group">R CYL {{ form.r_cyl }}</label>
+          <label class="form-group">R AXIS {{ form.r_axis }}</label>
+          <label class="form-group">R ADD {{ form.r_add }}</label>
+
+          <label class="form-group">L SPH {{ form.l_sph }}</label>
+          <label class="form-group">L CYL {{ form.l_cyl }}</label>
+          <label class="form-group">L AXIS {{ form.l_axis }}</label>
+          <label class="form-group">L ADD {{ form.l_add }}</label>
+        </div>
+      </section>
+
+      <!-- كل خانة قياس اختيارية حسب الحالة -->
+      <section class="form-card reveal in-view">
+        <h2>Additional Measurements</h2>
+        <p class="form-note">
+          Complete the measurements required for this case.
+          Leave unused cells blank.
+        </p>
+
+        <!-- جدول Distance P.D -->
+        <div class="measurement-table-wrap">
+          <table class="measurement-table">
+            <caption>Distance P.D</caption>
+            <thead>
+              <tr>
+                <th scope="col">Row</th>
+                <th scope="col">R</th>
+                <th scope="col">L</th>
+                <th scope="col">T</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_1_r.id_for_label }}">Distance P.D row 1 R</label>
+                  {{ form.distance_pd_1_r }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_1_l.id_for_label }}">Distance P.D row 1 L</label>
+                  {{ form.distance_pd_1_l }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_1_t.id_for_label }}">Distance P.D row 1 T</label>
+                  {{ form.distance_pd_1_t }}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_2_r.id_for_label }}">Distance P.D row 2 R</label>
+                  {{ form.distance_pd_2_r }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_2_l.id_for_label }}">Distance P.D row 2 L</label>
+                  {{ form.distance_pd_2_l }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_2_t.id_for_label }}">Distance P.D row 2 T</label>
+                  {{ form.distance_pd_2_t }}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_3_r.id_for_label }}">Distance P.D row 3 R</label>
+                  {{ form.distance_pd_3_r }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_3_l.id_for_label }}">Distance P.D row 3 L</label>
+                  {{ form.distance_pd_3_l }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_3_t.id_for_label }}">Distance P.D row 3 T</label>
+                  {{ form.distance_pd_3_t }}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">4</th>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_4_r.id_for_label }}">Distance P.D row 4 R</label>
+                  {{ form.distance_pd_4_r }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_4_l.id_for_label }}">Distance P.D row 4 L</label>
+                  {{ form.distance_pd_4_l }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.distance_pd_4_t.id_for_label }}">Distance P.D row 4 T</label>
+                  {{ form.distance_pd_4_t }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- جدول W.D.P.P -->
+        <div class="measurement-table-wrap">
+          <table class="measurement-table">
+            <caption>W.D.P.P</caption>
+            <thead>
+              <tr>
+                <th scope="col">Row</th>
+                <th scope="col">R</th>
+                <th scope="col">L</th>
+                <th scope="col">T</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_1_r.id_for_label }}">W.D.P.P row 1 R</label>
+                  {{ form.wdpp_1_r }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_1_l.id_for_label }}">W.D.P.P row 1 L</label>
+                  {{ form.wdpp_1_l }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_1_t.id_for_label }}">W.D.P.P row 1 T</label>
+                  {{ form.wdpp_1_t }}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_2_r.id_for_label }}">W.D.P.P row 2 R</label>
+                  {{ form.wdpp_2_r }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_2_l.id_for_label }}">W.D.P.P row 2 L</label>
+                  {{ form.wdpp_2_l }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_2_t.id_for_label }}">W.D.P.P row 2 T</label>
+                  {{ form.wdpp_2_t }}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_3_r.id_for_label }}">W.D.P.P row 3 R</label>
+                  {{ form.wdpp_3_r }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_3_l.id_for_label }}">W.D.P.P row 3 L</label>
+                  {{ form.wdpp_3_l }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_3_t.id_for_label }}">W.D.P.P row 3 T</label>
+                  {{ form.wdpp_3_t }}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">4</th>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_4_r.id_for_label }}">W.D.P.P row 4 R</label>
+                  {{ form.wdpp_4_r }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_4_l.id_for_label }}">W.D.P.P row 4 L</label>
+                  {{ form.wdpp_4_l }}
+                </td>
+                <td>
+                  <label class="measurement-label" for="{{ form.wdpp_4_t.id_for_label }}">W.D.P.P row 4 T</label>
+                  {{ form.wdpp_4_t }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- الاختيارات تأتي من ContractForm -->
+      <section class="form-card reveal in-view">
+        <h2>Magnification</h2>
+        <div class="check-grid">
+          {% for option in form.magnification %}
+            <label class="check-option" for="{{ option.id_for_label }}">
+              {{ option.tag }} {{ option.choice_label }}
+            </label>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="form-card reveal in-view">
+        <h2>Lens Type</h2>
+        <div class="check-grid">
+          {% for option in form.lens_type %}
+            <label class="check-option" for="{{ option.id_for_label }}">
+              {{ option.tag }} {{ option.choice_label }}
+            </label>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="form-card reveal in-view">
+        <h2>Frame & Color</h2>
+        <div class="form-grid">
+          <label class="form-group">
+            Frame
+            {{ form.frame }}
+          </label>
+          <label class="form-group">
+            Color
+            {{ form.color }}
+          </label>
+        </div>
+      </section>
+
+      <section class="form-card reveal in-view">
+        <h2>Lights</h2>
+        <div class="check-grid">
+          {% for option in form.lights %}
+            <label class="check-option" for="{{ option.id_for_label }}">
+              {{ option.tag }} {{ option.choice_label }}
+            </label>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="form-card reveal in-view">
+        <h2>System Pricing — SAR</h2>
+        <div class="form-grid">
+          <label class="form-group">
+            Loupes
+            {{ form.loupes_price }}
+          </label>
+          <label class="form-group">
+            Prescription
+            {{ form.prescription_price }}
+          </label>
+          <label class="form-group">
+            LED
+            {{ form.led_price }}
+          </label>
+          <label class="form-group">
+            Discount
+            {{ form.discount }}
+          </label>
+
+          <!-- الإجماليات للعرض فقط؛ الحساب المعتمد في Django -->
+          <label class="form-group">
+            Subtotal
+            <input
+              class="form-control"
+              id="subtotal-preview"
+              type="text"
+              readonly
+            >
+          </label>
+          <label class="form-group">
+            TOTAL
+            <input
+              class="form-control"
+              id="total-preview"
+              type="text"
+              readonly
+            >
+          </label>
+        </div>
+      </section>
+
+      <section class="form-card reveal in-view">
+        <div class="form-submit-row">
+          <button class="btn" type="submit">
+            Save & open print view
+          </button>
+          <a
+            class="btn btn-secondary"
+            href="{% static 'pdfs/AMTECH_Contract_Form_2026.pdf' %}"
+            download
+          >
+            Download original PDF
+          </a>
+        </div>
+      </section>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- نقل الألوان من Django إلى JavaScript بشكل آمن -->
+{{ frame_color_choices|json_script:"frame-color-data" }}
+
+<script>
+  (() => {
+    const form = document.getElementById("contract-form");
+    const frameSelect = document.getElementById("id_frame");
+    const colorSelect = document.getElementById("id_color");
+    const subtotalPreview = document.getElementById("subtotal-preview");
+    const totalPreview = document.getElementById("total-preview");
+
+    const colorMap = JSON.parse(
+      document.getElementById("frame-color-data").textContent
+    );
+
+    // عرض ألوان الفريم المختار فقط.
+    function updateColorOptions() {
+      const previousColor = colorSelect.value;
+      const selectedFrame = frameSelect.value;
+      const availableColors = colorMap[selectedFrame] || [];
+
+      // تفريغ القائمة القديمة وإضافة الاختيار الافتراضي.
+      colorSelect.replaceChildren(
+        new Option(
+          selectedFrame ? "Select a color" : "Select a frame first",
+          ""
+        )
+      );
+
+      // إضافة الألوان المتاحة لهذا الفريم.
+      for (const [value, label] of availableColors) {
+        colorSelect.add(new Option(label, value));
+      }
+
+      // الاحتفاظ باللون السابق فقط لو متاح للفريم الحالي.
+      const canKeepColor = availableColors.some(
+        ([value]) => value === previousColor
+      );
+
+      colorSelect.value = canKeepColor ? previousColor : "";
+
+      // منع اختيار اللون قبل تحديد الفريم.
+      colorSelect.disabled = !selectedFrame;
+    }
+
+    // تحويل الأسعار إلى هللات لحساب العرض بأرقام صحيحة.
+    function readHalalas(fieldName) {
+      const value = Number(form.elements.namedItem(fieldName).value);
+      return Number.isFinite(value) ? Math.round(value * 100) : 0;
+    }
+
+    // تحديث الإجماليات بصريًا؛ الحساب المعتمد يتم في Django.
+    function updatePricingPreview() {
+      const subtotal =
+        readHalalas("loupes_price") +
+        readHalalas("prescription_price") +
+        readHalalas("led_price");
+
+      const discount = readHalalas("discount");
+
+      subtotalPreview.value = (subtotal / 100).toFixed(2);
+      totalPreview.value = ((subtotal - discount) / 100).toFixed(2);
+    }
+
+    frameSelect.addEventListener("change", updateColorOptions);
+    form.addEventListener("input", updatePricingPreview);
+
+    // ضبط القيم عند فتح الصفحة أو رجوعها بأخطاء تحقق.
+    updateColorOptions();
+    updatePricingPreview();
+  })();
+</script>
+{% endblock %}

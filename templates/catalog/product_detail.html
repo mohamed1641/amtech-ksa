@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} — AMTECH KSA{% endblock %}
+
+{% block content %}
+
+<!-- Product Details Hero -->
+<section class="page-hero">
+  <div class="grid-bg" aria-hidden="true"></div>
+
+  <div class="hero-content reveal in-view">
+    <p class="signal">
+      {% if product.category %}
+        {{ product.category.name }}
+      {% else %}
+        Product details
+      {% endif %}
+    </p>
+
+    <h1 class="hero-title">{{ product.name }}</h1>
+
+    <p class="hero-text">
+      {% if product.short_description %}
+        {{ product.short_description }}
+      {% else %}
+        {{ product.description }}
+      {% endif %}
+    </p>
+
+    <div class="btn-row">
+      <a class="btn" href="{% url 'contact:contact' %}?product={{ product.name|urlencode }}">
+        Contact about this product
+      </a>
+
+      <a class="btn btn-secondary" href="{% static 'pdfs/Amtech_KSA_catalog_2026.pdf' %}" download>
+        Download catalogue
+      </a>
+    </div>
+  </div>
+
+  <div class="product-media reveal in-view">
+    {% if product.main_image %}
+      <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+    {% else %}
+      <img src="{% static 'images/products/ergozm.jpg' %}" alt="{{ product.name }}">
+    {% endif %}
+
+    <span class="price-badge">
+      {% if product.price_from %}
+        From {{ product.price_from|floatformat:0 }} SAR
+      {% else %}
+        Price on request
+      {% endif %}
+    </span>
+  </div>
+</section>
+
+<!-- Product Main Information -->
+<section class="section-compact">
+  <div class="container detail-layout">
+
+    <!-- Gallery -->
+    <div class="glass-card reveal in-view">
+      <h2>Product gallery</h2>
+
+      <div class="product-gallery">
+        {% if gallery_images %}
+          {% for image in gallery_images %}
+            <figure class="gallery-item">
+              <img src="{{ image.image.url }}" alt="{% if image.alt_text %}{{ image.alt_text }}{% else %}{{ product.name }}{% endif %}">
+            </figure>
+          {% endfor %}
+        {% else %}
+          <figure class="gallery-item">
+            {% if product.main_image %}
+              <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+            {% else %}
+              <img src="{% static 'images/products/ergozm.jpg' %}" alt="{{ product.name }}">
+            {% endif %}
+          </figure>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="glass-card reveal in-view">
+      <h2>Overview</h2>
+
+      <div class="info-list">
+        <div>
+          <span>Product</span>
+          <strong>{{ product.name }}</strong>
+        </div>
+
+        <div>
+          <span>Category</span>
+          <strong>
+            {% if product.category %}
+              {{ product.category.name }}
+            {% else %}
+              —
+            {% endif %}
+          </strong>
+        </div>
+
+        <div>
+          <span>System</span>
+          <strong>
+            {% if product.system %}
+              {{ product.get_system_display }}
+            {% else %}
+              —
+            {% endif %}
+          </strong>
+        </div>
+
+        <div>
+          <span>Starting price</span>
+          <strong>
+            {% if product.price_from %}
+              {{ product.price_from|floatformat:0 }} SAR
+            {% else %}
+              Price on request
+            {% endif %}
+          </strong>
+        </div>
+
+        {% if product.catalog_page %}
+          <div>
+            <span>Catalogue page</span>
+            <strong>{{ product.catalog_page }}</strong>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Description -->
+<section class="section-compact">
+  <div class="container">
+    <div class="glass-card reveal in-view">
+      <h2>Description</h2>
+
+      {% if product.description %}
+        <p>{{ product.description|linebreaks }}</p>
+      {% else %}
+        <p>No product description has been added yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Variants / Pricing Table -->
+<section class="section-compact">
+  <div class="container">
+    <div class="section-heading reveal in-view">
+      <p class="signal">Pricing options</p>
+      <h2>Magnification & price variants</h2>
+      <p>
+        Available catalogue variants for this product. Prices are shown in SAR.
+      </p>
+    </div>
+
+    <div class="table-wrap glass-card reveal in-view">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Magnification</th>
+            <th>Price</th>
+            <th>Working distance</th>
+            <th>Depth of focus</th>
+            <th>Field of view</th>
+            <th>Weight</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for variant in variants %}
+            <tr>
+              <td>
+                {% if variant.magnification %}
+                  {{ variant.magnification }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+              <td>
+                <strong>{{ variant.price|floatformat:0 }} SAR</strong>
+              </td>
+
+              <td>{{ variant.working_distance|default:"—" }}</td>
+              <td>{{ variant.depth_of_focus|default:"—" }}</td>
+              <td>{{ variant.field_of_view|default:"—" }}</td>
+              <td>{{ variant.weight|default:"—" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6">No variants have been added yet.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Specifications -->
+<section class="section-compact">
+  <div class="container">
+    <div class="glass-card reveal in-view">
+      <h2>Specifications</h2>
+
+      <div class="spec-grid">
+        {% for spec in specifications %}
+          <div class="spec-card">
+            <span>{{ spec.name }}</span>
+            <strong>{{ spec.value }}</strong>
+          </div>
+        {% empty %}
+          <p>No additional specifications have been added yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Related Products -->
+{% if related_products %}
+<section class="section-compact">
+  <div class="container">
+    <div class="section-heading reveal in-view">
+      <p class="signal">Related</p>
+      <h2>Related products</h2>
+    </div>
+
+    <div class="product-grid">
+      {% for item in related_products %}
+        <article class="product-card reveal in-view" data-tilt-card>
+          <a
+            class="product-card__image"
+            href="{% url 'catalog:product_detail' item.slug %}"
+            aria-label="View {{ item.name }}"
+          >
+            {% if item.main_image %}
+              <img src="{{ item.main_image.url }}" alt="{{ item.name }}">
+            {% else %}
+              <img src="{% static 'images/products/ergozm.jpg' %}" alt="{{ item.name }}">
+            {% endif %}
+          </a>
+
+          <div class="product-card__body">
+            <span class="eyebrow">
+              {% if item.category %}
+                {{ item.category.name }}
+              {% endif %}
+
+              {% if item.system %}
+                · {{ item.get_system_display }}
+              {% endif %}
+            </span>
+
+            <h3>{{ item.name }}</h3>
+
+            <p>{{ item.short_description|default:item.description|truncatewords:18 }}</p>
+
+            <footer class="product-card__footer">
+              <strong>
+                {% if item.price_from %}
+                  From {{ item.price_from|floatformat:0 }} SAR
+                {% else %}
+                  Price on request
+                {% endif %}
+              </strong>
+
+              <a href="{% url 'catalog:product_detail' item.slug %}">
+                View details
+              </a>
+            </footer>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

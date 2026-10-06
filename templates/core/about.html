@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About — AMTECH KSA{% endblock %}
+
+{% block content %}
+<!-- About Hero -->
+    <section class="content-grid container section">
+      <div class="hero-content reveal in-view">
+        <p class="signal">Company profile</p>
+        <h1 class="section-title">AMTECH KSA catalogue and company profile.</h1>
+        <p class="lead">
+          AMTECH KSA represents a premium product portfolio for dental loupes, LED headlights and clinical accessories.
+          This page is ready for the final Saudi branch information, contact details and brand story.
+        </p>
+
+        <div class="stats-grid">
+          <div class="stat-card"><b>10+</b><span>Years experience</span></div>
+          <div class="stat-card"><b>KSA</b><span>Saudi branch focus</span></div>
+          <div class="stat-card"><b>SAR</b><span>Catalogue pricing</span></div>
+        </div>
+      </div>
+
+      <div class="content-image reveal in-view">
+        <img src="{% static 'images/products/about-doctor.jpg' %}" alt="Doctor using AMTECH loupes">
+      </div>
+    </section>
+
+    <!-- About Content -->
+    <section class="section-compact">
+      <div class="container systems-grid">
+        <article class="system-card reveal">
+          <span>01</span>
+          <h3>Clinical precision</h3>
+          <p>Products are organized to help doctors compare magnification, field of view, working distance and weight.</p>
+        </article>
+
+        <article class="system-card reveal">
+          <span>02</span>
+          <h3>Saudi enquiries</h3>
+          <p>The contact flow is designed for local enquiries through form submission and WhatsApp communication.</p>
+        </article>
+
+        <article class="system-card reveal">
+          <span>03</span>
+          <h3>Admin ready</h3>
+          <p>Products, images, prices and specifications are structured for quick migration to Django Admin.</p>
+        </article>
+      </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

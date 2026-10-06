@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Policies — AMTECH KSA{% endblock %}
+
+{% block content %}
+<!-- Policies Hero -->
+<section class="page-hero page-hero-small">
+  <div class="grid-bg" aria-hidden="true"></div>
+
+  <div class="hero-content reveal in-view">
+    <p class="signal">Terms & Conditions</p>
+    <h1 class="hero-title">AMTECH KSA Contract Policies</h1>
+    <p class="hero-text">
+      Please review the official AMTECH KSA contract terms, including cancellation,
+      amendments, delivery, delay penalties, warranty, and exclusions.
+    </p>
+
+    <div class="btn-row">
+      <a
+        class="btn"
+        href="{% static 'pdfs/AMTECH_Contract_Terms_Conditions.pdf' %}"
+        download
+      >
+        Download Terms PDF
+      </a>
+
+      <a
+        class="btn btn-secondary"
+        href="{% static 'pdfs/AMTECH_Contract_Terms_Conditions.pdf' %}"
+        target="_blank"
+        rel="noopener"
+      >
+        Open PDF
+      </a>
+    </div>
+  </div>
+
+  <div class="product-media reveal in-view">
+    <img src="{% static 'images/products/contract-form.jpg' %}" alt="AMTECH Contract Form">
+    <span class="price-badge">Official terms</span>
+  </div>
+</section>
+
+<!-- Policies List -->
+<section class="section-compact">
+  <div class="container policy-list">
+
+    <article class="policy-card reveal">
+      <h3>Cancellation & Refund Policy</h3>
+      <ol>
+        <li>
+          <b>Early Cancellation:</b>
+          The customer may cancel the contract and receive a full refund within one week only from the contract date.
+        </li>
+        <li>
+          <b>Partial Cancellation:</b>
+          If cancellation is requested after one week and before three weeks from the contract date,
+          a 25% administrative fee will be deducted from the paid amount.
+        </li>
+        <li>
+          <b>Cancellation Restriction:</b>
+          After three weeks from the contract date, the customer is not entitled to cancel the contract
+          or claim any refund.
+        </li>
+      </ol>
+    </article>
+
+    <article class="policy-card reveal">
+      <h3>Specifications & Amendments</h3>
+      <ol start="4">
+        <li>
+          <b>Pre-manufacturing Modification:</b>
+          The customer may request changes to product specifications, such as magnification,
+          frame, or light source, within two weeks from the contract date.
+        </li>
+        <li>
+          <b>Post-delivery Modification:</b>
+          Within 45 days from delivery, the customer may request modifications to the design,
+          magnification, or frame without manufacturing costs. The customer shall bear shipping
+          and customs fees fixed at SAR 1,500.
+        </li>
+      </ol>
+    </article>
+
+    <article class="policy-card reveal">
+      <h3>Delivery & Delay Penalties</h3>
+      <ol start="6">
+        <li>
+          <b>Delivery Period:</b>
+          Delivery shall be within 6 to 8 weeks starting from the date of signing the contract
+          and receiving the payment or transfer confirmation from the customer.
+        </li>
+        <li>
+          <b>Delay Penalty:</b>
+          If delivery exceeds 10 weeks, the company shall apply a 3% discount from the total
+          contract value for each additional week of delay.
+        </li>
+      </ol>
+    </article>
+
+    <article class="policy-card reveal">
+      <h3>Warranty & Exclusions</h3>
+      <ol start="8">
+        <li>
+          <b>Warranty Scope:</b>
+          A one-year warranty is provided for the loupes frame and the light source,
+          starting from the date of delivery.
+        </li>
+        <li>
+          <b>Warranty Exclusions:</b>
+          The warranty does not cover misuse, failure to follow the instruction guide,
+          or any components manufactured from glass material.
+        </li>
+      </ol>
+    </article>
+
+  </div>
+</section>
+{% endblock %}

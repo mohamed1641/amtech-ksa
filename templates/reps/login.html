@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Reps Login — AMTECH KSA{% endblock %}
+
+{% block content %}
+<!-- منطقة تسجيل دخول المناديب -->
+<section class="login-wrap">
+  <div class="login-card reveal in-view">
+    <p class="signal">Sales reps only</p>
+    <h1>Reps login</h1>
+
+    <p class="form-note">
+      Sign in using the account provided by AMTECH KSA.
+    </p>
+
+    <!-- عرض رسالة الخطأ القادمة من rep_login -->
+    {% if error %}
+      <p class="form-note" role="alert">
+        {{ error }}
+      </p>
+    {% endif %}
+
+    <!-- إرسال البيانات إلى Django باستخدام POST -->
+    <form
+      class="form-grid"
+      method="post"
+      action="{% url 'reps:login' %}"
+    >
+      <!-- حماية الفورم من الطلبات المزوّرة -->
+      {% csrf_token %}
+
+      <!-- الاحتفاظ باسم المستخدم لو محاولة الدخول فشلت -->
+      <label class="form-group form-group--wide">
+        Username
+        <input
+          class="form-control"
+          name="username"
+          type="text"
+          value="{{ request.POST.username }}"
+          autocomplete="username"
+          required
+          placeholder="sales_rep_username"
+        >
+      </label>
+
+      <!-- كلمة المرور لا نعيد عرضها بعد فشل الدخول -->
+      <label class="form-group form-group--wide">
+        Password
+        <input
+          class="form-control"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+          placeholder="••••••••"
+        >
+      </label>
+
+      <div class="form-submit-row">
+        <button class="btn" type="submit">
+          Login and open form
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+  <!-- لا نحمّل reps.js هنا لأنه كان ينفّذ دخولًا تجريبيًا -->
+{% endblock %}

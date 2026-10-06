@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contract #{{ contract.pk }} — AMTECH KSA{% endblock %}
+
+{% block content %}
+<section class="rep-page">
+  <div class="container">
+    <div class="form-card reveal in-view">
+      <p class="signal">Contract saved</p>
+      <h1>Contract #{{ contract.pk }}</h1>
+
+      <!-- ملخص العقد المحفوظ -->
+      <p>
+        <strong>Customer:</strong> {{ contract.name }}
+      </p>
+      <p>
+        <strong>Sales Rep:</strong>
+        {{ contract.sales_rep.get_full_name|default:contract.sales_rep.username }}
+      </p>
+      <p>
+        <strong>Total:</strong>
+        {{ contract.total|floatformat:2 }} SAR
+      </p>
+
+      <p class="form-note">
+        Open the completed contract to review and print it,
+        or download a PDF copy.
+      </p>
+
+      <div class="btn-row">
+        <!-- فتح العقد الأصلي المعبّأ في تبويب جديد للطباعة -->
+        <a
+          class="btn"
+          href="{% url 'reps:pdf' contract.pk %}"
+          target="_blank"
+          rel="noopener"
+        >
+          Open PDF / Print
+        </a>
+
+        <!-- تحميل نفس العقد مباشرة -->
+        <a
+          class="btn btn-secondary"
+          href="{% url 'reps:pdf' contract.pk %}?download=1"
+        >
+          Download contract PDF
+        </a>
+
+        <!-- فتح فورم جديد مع بقاء العقد السابق محفوظًا -->
+        <a class="btn btn-secondary" href="{% url 'reps:form' %}">
+          New contract
+        </a>
+      </div>
+
+      <!-- السياسات ملف منفصل عن العقد -->
+      <div class="download-row">
+        <a
+          class="btn btn-secondary"
+          href="{% static 'pdfs/AMTECH_Contract_Terms_Conditions.pdf' %}"
+          target="_blank"
+          rel="noopener"
+        >
+          Open terms PDF
+        </a>
+
+        <a
+          class="btn btn-secondary"
+          href="{% static 'pdfs/AMTECH_Contract_Terms_Conditions.pdf' %}"
+          download
+        >
+          Download terms PDF
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- الطباعة تتم من عارض PDF؛ لا نستخدم قالب الطباعة القديم -->
+{% endblock %}

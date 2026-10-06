@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AMTECH KSA — Product Portfolio{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+    <section class="hero">
+      <div class="grid-bg" aria-hidden="true"></div>
+
+      <div class="hero-content reveal in-view">
+        <p class="signal">AMTECH KSA Product Portfolio</p>
+        <h1 class="hero-title">Magnification & illumination for precise clinical work.</h1>
+        <p class="hero-text">
+          Explore catalogue-based AMTECH loupes and LED headlights with clear specifications,
+          Saudi pricing and direct enquiry flow.
+        </p>
+
+        <div class="btn-row">
+          <a class="btn" href="{% url 'catalog:product_list' %}">Explore products</a>
+          <a class="btn btn-secondary" href="{% static 'pdfs/Amtech_KSA_catalog_2026.pdf' %}" download>Download catalogue</a>
+        </div>
+      </div>
+
+      <div class="hero-media reveal in-view">
+        <div class="scan-line" aria-hidden="true"></div>
+        <img src="{% static 'images/products/hero-energy.jpg' %}" alt="AMTECH Energy I Headlight">
+        <span class="floating-spec spec-a">LED</span>
+        <span class="floating-spec spec-b">Loupes</span>
+        <span class="floating-spec spec-c">SAR</span>
+      </div>
+    </section>
+
+    <!-- Product Systems Overview -->
+    <section class="section-compact">
+      <div class="container systems-grid">
+        <article class="system-card reveal">
+          <span>01</span>
+          <h3>Loupes</h3>
+          <p>TTL, Ergo and Prismatic systems organized by magnification, field of view, working distance and price.</p>
+        </article>
+
+        <article class="system-card reveal">
+          <span>02</span>
+          <h3>Headlights</h3>
+          <p>Wireless, semi-wired and LED light solutions for bright, shadow-free clinical visibility.</p>
+        </article>
+
+        <article class="system-card reveal">
+          <span>03</span>
+          <h3>Reps</h3>
+          <p>A dedicated sales-rep flow for contract form entry, instant print view and admin-ready data structure.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- المنتجات المميزة تأتي من قاعدة البيانات عبر Django -->
+    <section class="section">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div>
+            <p class="signal">Featured products</p>
+            <h2 class="section-title">Premium catalogue cards ready for Django integration.</h2>
+          </div>
+          <a class="btn btn-secondary" href="{% url 'catalog:product_list' %}">View all products</a>
+        </div>
+
+        <div class="featured-grid">
+  {% for product in featured_products %}
+    <article class="product-card reveal in-view" data-tilt-card>
+
+      <a
+        class="product-card__image"
+        href="{% url 'catalog:product_detail' product.slug %}"
+        aria-label="View {{ product.name }}"
+      >
+        {% if product.main_image %}
+          <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+        {% else %}
+          <img src="{% static 'images/products/ergozm.jpg' %}" alt="{{ product.name }}">
+        {% endif %}
+      </a>
+
+      <div class="product-card__body">
+        <span class="eyebrow">
+          {% if product.category %}
+            {{ product.category.name }}
+          {% else %}
+            Product
+          {% endif %}
+
+          {% if product.system %}
+            · {{ product.get_system_display }}
+          {% endif %}
+        </span>
+
+        <h3>{{ product.name }}</h3>
+
+        <p>
+          {% if product.short_description %}
+            {{ product.short_description }}
+          {% else %}
+            {{ product.description|truncatewords:22 }}
+          {% endif %}
+        </p>
+
+        <div class="chips" aria-label="Available magnifications">
+          {% for variant in product.variants.all %}
+            {% if variant.magnification %}
+              <span class="chip">{{ variant.magnification }}</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <footer class="product-card__footer">
+          <strong>
+            {% if product.price_from %}
+              From {{ product.price_from|floatformat:0 }} SAR
+            {% else %}
+              Price on request
+            {% endif %}
+          </strong>
+
+          <a href="{% url 'catalog:product_detail' product.slug %}">
+            View details
+          </a>
+        </footer>
+      </div>
+
+    </article>
+  {% empty %}
+    <div class="empty-state">
+      No featured products have been added yet.
+    </div>
+  {% endfor %}
+</div>
+      </div>
+    </section>
+
+    <!-- Catalogue Download CTA -->
+    <section class="section-compact">
+      <div class="container download-cta reveal">
+        <div>
+          <p class="signal">AMTECH KSA</p>
+          <h2 class="section-title">Download the complete product catalogue.</h2>
+          <p>
+            The PDF catalogue is available across the website for customers who need the full product reference
+            before contacting the Saudi team.
+          </p>
+          <div class="btn-row">
+            <a class="btn btn-dark" href="{% static 'pdfs/Amtech_KSA_catalog_2026.pdf' %}" download>Download PDF</a>
+          </div>
+        </div>
+
+        <img src="{% static 'images/products/catalog-cover.jpg' %}" alt="AMTECH Catalogue Cover">
+      </div>
+    </section>
+
+    <!-- Contact CTA -->
+    <section class="section-compact">
+      <div class="container contact-card reveal">
+        <p class="signal">Need more information?</p>
+        <h2 class="section-title">Send a product enquiry.</h2>
+        <p>
+          Customers can contact AMTECH KSA through the website form or WhatsApp. The final Django version will save
+          form submissions in the admin panel.
+        </p>
+        <div class="btn-row">
+          <a class="btn" href="{% url 'contact:contact' %}">Contact us</a>
+          <a
+  class="btn btn-secondary"
+  href="https://wa.me/966560080408?text=Hello%20AMTECH%20KSA%2C%20I%20need%20product%20information"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  WhatsApp enquiry
+</a>
+        </div>
+      </div>
+    </section>
+{% endblock %}
+

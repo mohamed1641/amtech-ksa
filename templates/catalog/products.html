@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Products — AMTECH KSA{% endblock %}
+
+{% block content %}
+
+<!-- Products Hero -->
+<section class="page-hero page-hero-small">
+  <div class="grid-bg" aria-hidden="true"></div>
+
+  <div class="hero-content reveal in-view">
+    <p class="signal">Catalogue products</p>
+    <h1 class="hero-title">Products with catalogue pricing.</h1>
+    <p class="hero-text">
+      Browse AMTECH KSA products with visible SAR prices from the official catalogue.
+    </p>
+  </div>
+
+  <div class="product-media reveal in-view">
+    <img src="{% static 'images/products/ergozm.jpg' %}" alt="AMTECH ErgoZM loupe">
+    <span class="price-badge">Loupes & Headlights</span>
+  </div>
+</section>
+
+<!-- Product Filters -->
+<section class="section-compact">
+  <div class="container">
+
+    <form class="product-toolbar reveal in-view" method="get" action="{% url 'catalog:product_list' %}" aria-label="Product filters">
+
+      <!-- Search -->
+      <input
+        class="form-control"
+        type="search"
+        name="q"
+        value="{{ search_query }}"
+        placeholder="Search product name, system or category"
+        aria-label="Search products"
+      >
+
+      <!-- Category Filter -->
+      <select class="form-control" name="category" aria-label="Filter by category" onchange="this.form.submit()">
+        <option value="">All categories</option>
+
+        {% for category in categories %}
+          <option value="{{ category.slug }}" {% if current_category == category.slug %}selected{% endif %}>
+            {{ category.name }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <!-- System Filter -->
+      <select class="form-control" name="system" aria-label="Filter by system" onchange="this.form.submit()">
+        <option value="">All systems</option>
+
+        {% for system_value, system_label in systems %}
+          <option value="{{ system_value }}" {% if current_system == system_value %}selected{% endif %}>
+            {{ system_label }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <!-- Magnification Filter -->
+      <select class="form-control" name="magnification" aria-label="Filter by magnification" onchange="this.form.submit()">
+        <option value="">All magnifications</option>
+
+        {% for magnification in magnifications %}
+          <option value="{{ magnification }}" {% if current_magnification == magnification %}selected{% endif %}>
+            {{ magnification }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <!-- Sort Filter -->
+      <select class="form-control" name="sort" aria-label="Sort products" onchange="this.form.submit()">
+        <option value="featured" {% if current_sort == "featured" %}selected{% endif %}>Featured order</option>
+        <option value="low" {% if current_sort == "low" %}selected{% endif %}>Lowest price</option>
+        <option value="high" {% if current_sort == "high" %}selected{% endif %}>Highest price</option>
+        <option value="name" {% if current_sort == "name" %}selected{% endif %}>Name A-Z</option>
+      </select>
+
+      <div class="counter">
+        {{ product_count }} products
+      </div>
+
+    </form>
+
+  </div>
+</section>
+
+<!-- Product Grid -->
+<section class="section-compact">
+  <div class="container product-grid">
+
+    {% for product in products %}
+      <article class="product-card reveal in-view" data-tilt-card>
+
+        <a
+          class="product-card__image"
+          href="{% url 'catalog:product_detail' product.slug %}"
+          aria-label="View {{ product.name }}"
+        >
+          {% if product.main_image %}
+            <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+          {% else %}
+            <img src="{% static 'images/products/ergozm.jpg' %}" alt="{{ product.name }}">
+          {% endif %}
+        </a>
+
+        <div class="product-card__body">
+          <span class="eyebrow">
+            {% if product.category %}
+              {{ product.category.name }}
+            {% else %}
+              Product
+            {% endif %}
+
+            {% if product.system %}
+              · {{ product.get_system_display }}
+            {% endif %}
+          </span>
+
+          <h3>{{ product.name }}</h3>
+
+          <p>
+            {% if product.short_description %}
+              {{ product.short_description }}
+            {% else %}
+              {{ product.description|truncatewords:22 }}
+            {% endif %}
+          </p>
+
+          <div class="chips" aria-label="Available magnifications">
+            {% for variant in product.variants.all %}
+              {% if variant.magnification %}
+                <span class="chip">{{ variant.magnification }}</span>
+              {% endif %}
+            {% empty %}
+              <span class="chip">No variants</span>
+            {% endfor %}
+          </div>
+
+          <footer class="product-card__footer">
+            <strong>
+              {% if product.price_from %}
+                From {{ product.price_from|floatformat:0 }} SAR
+              {% else %}
+                Price on request
+              {% endif %}
+            </strong>
+
+            <a href="{% url 'catalog:product_detail' product.slug %}">
+              View details
+            </a>
+          </footer>
+        </div>
+
+      </article>
+    {% empty %}
+      <div class="empty-state">
+        No products match your filters.
+      </div>
+    {% endfor %}
+
+  </div>
+</section>
+
+{% endblock %}
